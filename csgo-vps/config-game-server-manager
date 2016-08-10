@@ -1,0 +1,41 @@
+---
+- hosts: localhost
+
+  tasks:
+  - name: git game-server-manager
+    git: repo=https://github.com/dgibbs64/linuxgsm.git dest=/root/ansible/git clone=yes force=yes
+
+  - name: select steam key
+    command: tail -1 /root/ansible/steam-keys.txt
+    register: steam_key
+
+  - name: insert steam key
+    lineinfile: dest=/root/ansible/git/CounterStrikeGlobalOffensive/csgoserver regexp='^gslt=\"\"' line='gslt=\"{{ steam_key.stdout_lines }}\"'
+
+  - name: delete key used
+    command: ed -s steam-keys.txt <<< $'-0,$d\nwq'
+
+  - name: clean up csgoserver file
+    command: sed -i "s/\[u'//" /root/ansible/git/CounterStrikeGlobalOffensive/csgoserver
+
+  - name: clean up csgoserver file
+    command: sed -i "s/'\]//" /root/ansible/git/CounterStrikeGlobalOffensive/csgoserver
+
+  - name: change mapgroup
+    command: sed -i "s/mapgroup=\"random_classic\"/mapgroup=\"mg_active\"/" /root/ansible/git/CounterStrikeGlobalOffensive/csgoserver
+
+  - name: change gamemode
+    command: sed -i "s/gamemode=\"0\"/gamemode=\"1\"/" /root/ansible/git/CounterStrikeGlobalOffensive/csgoserver
+
+  - name: change maxplayers
+    command: sed -i "s/maxplayers=\"16\"/maxplayers=\"10\"/" /root/ansible/git/CounterStrikeGlobalOffensive/csgoserver
+
+  - name: change tickrate
+    command: sed -i "s/tickrate=\"64\"/tickrate=\"128\"/" /root/ansible/git/CounterStrikeGlobalOffensive/csgoserver
+
+- hosts: game-servers
+  
+  tasks:
+
+  - name: copy game-server-manager
+    synchronize: src=/root/ansible/git/CounterStrikeGlobalOffensive/ dest=/home/csgo/
