@@ -1,0 +1,28 @@
+---
+- hosts: game-servers
+   
+  tasks:
+  - name: install dependencies
+    yum: name={{ item }} state=latest
+    with_items:     
+     - git    
+     - glibc
+     - tmux
+     - file 
+     - glibc.i686 
+     - libstdc++.i686
+
+  - name: create csgo user
+    user: name=csgo createhome=yes
+  
+  - name: copy csgoserver files
+    synchronize: src=/root/ansible/git/CounterStrikeGlobalOffensive/ dest=/home/csgo/
+  
+  - file: path=/home/csgo/ owner=csgo group=csgo
+
+  - name: install csgo-server
+    become_user: csgo
+    command: /home/csgo/csgoserver auto-install
+
+  - name: iptables
+    synchronize: src=/root/ansible/iptables/iptables dest=/etc/sysconfig/
