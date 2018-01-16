@@ -1,0 +1,5 @@
+---
+- name: add mysql user
+  mysql_user: login_user={{ root }} login_password={{ rootpw }} name={{ item.user }} password={{ item.hash }} encrypted=yes priv='*.*:ALL' state=present
+  with_items:
+   - "{{ users }}"

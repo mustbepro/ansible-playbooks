@@ -1,0 +1,16 @@
+---
+dockerfiles_path: '/srv/docker/dockerfiles/sftp_servers'
+vol_path: '/srv/docker/volumes/sftp_servers'
+
+vol_tree:
+  - 'etc'
+  - 'data'
+
+files:
+  - 'Dockerfile'
+  - 'docker-compose.yml'
+  - 'configs/sftp.sh'
+  - 'configs/sshd_config'
+
+config:
+  - { user: '', port: 'custom-port', shadow: '$6$ hash pwd', id: 'uid' }

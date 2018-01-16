@@ -1,0 +1,6 @@
+---
+- name: copy footer config
+  copy: src=99-footer dest=/etc/update-motd.d/ mode=0655
+
+- name: copy footer motd
+  copy: src=motd.tail dest=/etc/ mode=0655

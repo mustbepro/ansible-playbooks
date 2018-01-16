@@ -1,0 +1,24 @@
+---
+
+- iptables:
+   chain: INPUT
+   ctstate: ESTABLISHED,RELATED
+   jump: ACCEPT
+- iptables:
+   chain: INPUT
+   destination_port: 22
+   protocol: tcp
+   jump: ACCEPT
+- iptables:
+   chain: INPUT
+   destination_port: 443
+   protocol: tcp
+   jump: ACCEPT
+- iptables:
+   chain: INPUT
+   destination_port: 80
+   protocol: tcp
+   jump: ACCEPT
+- iptables:
+   chain: INPUT
+   reject_with: icmp-port-unreachable

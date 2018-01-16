@@ -1,0 +1,15 @@
+version: '2.2'
+
+services:
+
+  sftp_{{ item.0.user }}:
+    build: ./
+    container_name: sftp_{{ item.0.user }}
+    restart: on-failure
+    cpus: 1
+    mem_limit: "500M"
+    volumes:
+      - "/srv/docker/volumes/sftp_servers/{{ item.0.user }}/etc:/etc/ssh"
+      - "/srv/docker/volumes/sftp_servers/{{ item.0.user }}/data:/srv/sftp"
+    ports:
+      - "{{ item.0.port }}:22"

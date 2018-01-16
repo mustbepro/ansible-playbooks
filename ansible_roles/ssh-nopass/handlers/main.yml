@@ -1,0 +1,4 @@
+---
+
+- name: restart ssh daemon
+  service: name=ssh state=reloaded

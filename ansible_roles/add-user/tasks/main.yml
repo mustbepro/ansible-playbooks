@@ -1,0 +1,17 @@
+---
+- name: add linux user
+  user:
+   name: "{{ item.name }}"
+   uid: "{{ item.uid }}"
+   groups: "{{ item.groups }}"
+   password: "{{ item.hash }}"
+   shell: /bin/bash
+   append: yes
+  with_items: "{{ ssh_vars }}"
+
+- name: add pub keys
+  authorized_key:
+   user: "{{ item.name }}"
+   key: "{{ lookup('file', 'files/'+ item.pub) }}"
+   state: present
+  with_items: "{{ ssh_vars }}"

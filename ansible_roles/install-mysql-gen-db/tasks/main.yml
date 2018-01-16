@@ -1,0 +1,9 @@
+---
+- name: Install MySQL
+  apt: name=mysql-server update_cache=yes state=present
+- name: Start the MySQL service
+  service: name=mysql state=started enabled=true
+- name: gen.sh copy
+  copy: src=gen.sh dest=/tmp/gen.sh
+- name: generate database
+  shell: /bin/bash /tmp/gen.sh && rm /tmp/gen.sh

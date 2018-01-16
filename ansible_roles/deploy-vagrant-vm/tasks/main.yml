@@ -1,0 +1,38 @@
+---
+- name: if vm exist; do not start vm
+  stat: path=/srv/vagrant/{{item.hostname }}
+  register: dir
+  with_items:
+   - "{{ vms }}"
+
+- name: setup dirs
+  file: path=/srv/vagrant/{{ item.hostname }} state=directory
+  with_items:
+   - "{{ vms }}"
+
+- name: copy vagrantfile
+  template: src=Vagrantfile dest=/srv/vagrant/{{ item.hostname }}/ mode=0600
+  with_items:
+   - "{{ vms }}"
+
+- name: ansible provision vm; roles
+  copy: src=roles dest=/srv/vagrant/{{ item.hostname }}/
+  with_items:
+    - "{{ vms }}"
+
+- name: ansible provision vm; yml
+  copy: src=provision_vm.yml dest=/srv/vagrant/{{ item.hostname }}/
+  with_items:
+    - "{{ vms }}"
+
+- name: start vm
+  shell: cd /srv/vagrant/{{ item.hostname }}/ && vagrant up
+  ignore_errors: true
+  with_items: "{{ dir.results }}"
+  when: item.stat.isdir is not defined
+
+- name: grab ssh-key for vm
+  fetch: src=/srv/vagrant/{{ item.hostname }}/.vagrant/machines/default/virtualbox/private_key dest="~/{{ hostname }}.key" flat=yes
+  ignore_errors: true
+  with_items:
+   - "{{ vms }}"

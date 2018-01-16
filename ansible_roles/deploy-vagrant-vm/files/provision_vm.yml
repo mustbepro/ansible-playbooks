@@ -1,0 +1,13 @@
+---
+- hosts: all
+  gather_facts: false
+
+  tasks:
+
+- name: provision_vm
+  gather_facts: false
+  hosts: all
+  become: true
+  tasks:
+  roles:
+   - configs

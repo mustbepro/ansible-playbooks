@@ -1,0 +1,25 @@
+- name: get iptables
+  shell: sudo iptables -nvL DOCKER -t nat --line | grep {{ port }}
+  register: out
+
+- name: get iptables rule_num
+  shell: echo {{ out.stdout_lines }} | tr -t -s ' ' | cut -f 1 -d ' ' | sed -e 's/\[u//'
+  register: line_num
+
+- name: get iptables interface
+  shell: echo {{ out.stdout_lines }} | tr -t -s ' ' | cut -f 7 -d ' ' | sed -e 's/!//'
+  register: eth_name
+
+- debug: var=eth_name.stdout
+
+- name: get to-desination
+  shell: echo {{ out.stdout_lines }} | tr -t -s ' ' | cut -f 13 -d ' ' | sed -e 's/to://;s/\]//'
+  register: dest
+
+- debug: var=dest.stdout
+
+- name: remove container DNAT rule
+  shell: 'iptables -t nat -D DOCKER {{ line_num.stdout }}'
+
+- name: add container DNAT rule
+  shell: 'iptables -t nat -A DOCKER ! -i {{ eth_name.stdout }} -m comment --comment "{{ name }}" -p tcp -m tcp --dport 22 -s {{ ip }} -j DNAT --to-destination {{ dest.stdout }}'

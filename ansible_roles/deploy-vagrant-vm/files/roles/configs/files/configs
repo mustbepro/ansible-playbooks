@@ -1,0 +1,5 @@
+users:
+
+john - belongs to groups: dev
+bob - belongs to groups: analytics
+alice - belongs to groups: dev, analytics

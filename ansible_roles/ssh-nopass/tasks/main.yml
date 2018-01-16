@@ -1,0 +1,10 @@
+---
+- replace:
+   path: /etc/ssh/sshd_config
+   regexp: '(^#|^)PasswordAuthentication(.*$)'
+   replace: 'PasswordAuthentication no'
+- replace:
+   path: /etc/ssh/sshd_config
+   regexp: '^(.*)PubkeyAuthentication(.*$)'
+   replace: 'PubkeyAuthentication yes #'
+  notify: restart ssh daemon

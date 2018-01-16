@@ -1,0 +1,22 @@
+- name: setup volumes
+  file: state=directory path={{ vol_path }}/{{ item.0.user }}/{{ item.1 }}
+  with_nested:
+    - "{{ config }}"
+    - "{{ vol_tree }}"
+
+- name: setup dockerfiles
+  file: state=directory path={{ dockerfiles_path }}/{{ item.user }}/configs
+  with_items:
+    - "{{ config }}"
+
+- name: copy dockerfiles
+  template: mode=0755 src={{ item.1 }} dest=/srv/docker/dockerfiles/sftp_servers/{{ item.0.user }}/{{ item.1 }}
+  with_nested:
+    - "{{ config }}"
+    - "{{ files }}"
+
+- name: build and start sftp service
+  become_user: iceman
+  docker_service: project_src=/srv/docker/dockerfiles/sftp_servers/{{ item.user }} build=yes recreate=never
+  with_items: "{{ config }}"
+

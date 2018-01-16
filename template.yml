@@ -1,0 +1,15 @@
+---
+- hosts: "{{ var_host | default('all') }}"
+  gather_facts: false
+
+  tasks:
+
+- name: run roles
+  become: true
+  gather_facts: false
+  hosts: "{{ var_host | default('all') }}"
+  tasks:
+
+  roles:
+   -
+

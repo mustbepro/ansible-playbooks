@@ -1,0 +1,3 @@
+---
+ssh_vars:
+  - { name: "", uid: "", groups: "", hash: "", pub: '' }
