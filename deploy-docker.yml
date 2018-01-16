@@ -1,0 +1,53 @@
+---
+- hosts:  "{{ host | default('all') }}"
+  become: true
+  
+  tasks:
+
+  - name: add docker repo; apt update
+    shell: add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+  - name: get docker gpg key; add key
+    shell: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+
+  - name: Update repositories cache and install "docker-ce"
+    apt:
+      name: docker-ce
+      update_cache: yes
+
+  - apt:
+    name: "{{ item }}"
+    with_items:
+      - "python-pip"
+      - "git"
+
+  - pip:
+      name: docker-compose
+
+  - name: start docker on boot
+    systemd:
+      name: docker
+      enabled: yes
+
+  - name: add docker admins
+    user:
+      name: "{{ admin }}"
+      groups: docker
+      append: yes
+
+  - file:
+      path: "{{ item }}"
+      state: directory
+      mode: 0750
+      group: docker
+    with_items:
+      - "/srv/docker/volumes"
+      - "/srv/docker/dockerfiles"
+
+  - acl:
+      path: /srv/docker
+      entity: "{{ admin }}"
+      etype: user
+      permissions: rwx
+      recursive: yes
+      state: present
